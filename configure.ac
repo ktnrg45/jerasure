@@ -15,7 +15,8 @@ AM_INIT_AUTOMAKE([1.13 -Wall -Wno-extra-portability])
 dnl This must be before LT_INIT and AC_PROG_CC.
 : ${CFLAGS='-g -O3 -Wall'}
 
-LT_INIT([disable-static])
+LT_INIT([disable-static win32-dll])
+LT_LANG([Windows Resource])
 
 # Checks for programs.
 AC_PROG_CC
