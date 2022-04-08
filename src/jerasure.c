@@ -52,7 +52,7 @@
 #include "galois.h"
 #include "jerasure.h"
 
-#define talloc(type, num) (type *) malloc(sizeof(type)*(num))
+//#define talloc(type, num) (type *) malloc(sizeof(type)*(num))
 
 static double jerasure_total_xor_bytes = 0;
 static double jerasure_total_gf_bytes = 0;
@@ -65,18 +65,24 @@ void jerasure_print_matrix(int *m, int rows, int cols, int w)
   char s[30];
   unsigned int w2;
 
-  if (w == 32) {
+  if (w == 32)
+  {
     fw = 10;
-  } else {
+  }
+  else
+  {
     w2 = (1 << w);
-    sprintf(s, "%u", w2-1);
+    sprintf(s, "%u", w2 - 1);
     fw = strlen(s);
   }
 
-  for (i = 0; i < rows; i++) {
-    for (j = 0; j < cols; j++) {
-      if (j != 0) printf(" ");
-      printf("%*u", fw, m[i*cols+j]); 
+  for (i = 0; i < rows; i++)
+  {
+    for (j = 0; j < cols; j++)
+    {
+      if (j != 0)
+        printf(" ");
+      printf("%*u", fw, m[i * cols + j]);
     }
     printf("\n");
   }
@@ -86,11 +92,15 @@ void jerasure_print_bitmatrix(int *m, int rows, int cols, int w)
 {
   int i, j;
 
-  for (i = 0; i < rows; i++) {
-    if (i != 0 && i%w == 0) printf("\n");
-    for (j = 0; j < cols; j++) {
-      if (j != 0 && j%w == 0) printf(" ");
-      printf("%d", m[i*cols+j]); 
+  for (i = 0; i < rows; i++)
+  {
+    if (i != 0 && i % w == 0)
+      printf("\n");
+    for (j = 0; j < cols; j++)
+    {
+      if (j != 0 && j % w == 0)
+        printf(" ");
+      printf("%d", m[i * cols + j]);
     }
     printf("\n");
   }
@@ -101,14 +111,16 @@ int jerasure_make_decoding_matrix(int k, int m, int w, int *matrix, int *erased,
   int i, j, *tmpmat;
 
   j = 0;
-  for (i = 0; j < k; i++) {
-    if (erased[i] == 0) {
+  for (i = 0; j < k; i++)
+  {
+    if (erased[i] == 0)
+    {
       dm_ids[j] = i;
       j++;
     }
   }
 
-  tmpmat = talloc(int, k*k);
+  tmpmat = (int *)malloc(sizeof(int) * k * k);
   if (tmpmat == NULL) { return -1; }
   for (i = 0; i < k; i++) {
     if (dm_ids[i] < k) {
@@ -140,7 +152,7 @@ int jerasure_make_decoding_bitmatrix(int k, int m, int w, int *matrix, int *eras
     }
   }
 
-  tmpmat = talloc(int, k*k*w*w);
+  tmpmat = (int *)malloc(sizeof(int) * k * k * w * w);
   if (tmpmat == NULL) { return -1; }
   for (i = 0; i < k; i++) {
     if (dm_ids[i] < k) {
@@ -208,13 +220,13 @@ int jerasure_matrix_decode(int k, int m, int w, int *matrix, int row_k_ones, int
   decoding_matrix = NULL;
 
   if (edd > 1 || (edd > 0 && (!row_k_ones || erased[k]))) {
-    dm_ids = talloc(int, k);
+    dm_ids = (int *)malloc(sizeof(int) * k);
     if (dm_ids == NULL) {
       free(erased);
       return -1;
     }
 
-    decoding_matrix = talloc(int, k*k);
+    decoding_matrix = (int *)malloc(sizeof(int) * k * k);
     if (decoding_matrix == NULL) {
       free(erased);
       free(dm_ids);
@@ -245,7 +257,7 @@ int jerasure_matrix_decode(int k, int m, int w, int *matrix, int row_k_ones, int
   /* Then if necessary, decode drive lastdrive */
 
   if (edd > 0) {
-    tmpids = talloc(int, k);
+    tmpids = (int *)malloc(sizeof(int) * k);
     if (!tmpids) {
       free(erased);
       free(dm_ids);
@@ -282,7 +294,7 @@ int *jerasure_matrix_to_bitmatrix(int k, int m, int w, int *matrix)
 
   if (matrix == NULL) { return NULL; }
 
-  bitmatrix = talloc(int, k*m*w*w);
+  bitmatrix = (int *)malloc(sizeof(int) * k * m * w * w);
   if (!bitmatrix) return NULL;
 
   rowelts = k * w;
@@ -534,7 +546,7 @@ int *jerasure_erasures_to_erased(int k, int m, int *erasures)
   int i;
 
   td = k+m;
-  erased = talloc(int, td);
+  erased = (int *)malloc(sizeof(int) * td);
   if (erased == NULL) return NULL;
   t_non_erased = td;
 
@@ -674,13 +686,13 @@ int jerasure_bitmatrix_decode(int k, int m, int w, int *bitmatrix, int row_k_one
   
   if (edd > 1 || (edd > 0 && (row_k_ones != 1 || erased[k]))) {
 
-    dm_ids = talloc(int, k);
+    dm_ids = (int *)malloc(sizeof(int) * k);
     if (dm_ids == NULL) {
       free(erased);
       return -1;
     }
-  
-    decoding_matrix = talloc(int, k*k*w*w);
+
+    decoding_matrix = (int *)malloc(sizeof(int) * k * k * w * w);
     if (decoding_matrix == NULL) {
       free(erased);
       free(dm_ids);
@@ -703,7 +715,7 @@ int jerasure_bitmatrix_decode(int k, int m, int w, int *bitmatrix, int row_k_one
   }
 
   if (edd > 0) {
-    tmpids = talloc(int, k);
+    tmpids = (int *)malloc(sizeof(int) * k);
     if (!tmpids) {
       free(erased);
       free(dm_ids);
@@ -759,8 +771,8 @@ static char **set_up_ptrs_for_scheduled_decoding(int k, int m, int *erasures, ch
   
        However, we're going to set row_ids and ind_to_row in a different procedure.
    */
-         
-  ptrs = talloc(char *, k+m);
+
+  ptrs = (char **)malloc(sizeof(char *) * (k + m));
   if (!ptrs) {
     free(erased);
     return NULL;
@@ -852,10 +864,10 @@ static int **jerasure_generate_decoding_schedule(int k, int m, int w, int *bitma
   for (i = 0; erasures[i] != -1; i++) {
     if (erasures[i] < k) ddf++; else cdf++;
   }
-  
-  row_ids = talloc(int, k+m);
+
+  row_ids = (int *)malloc(sizeof(int) * (k + m));
   if (!row_ids) return NULL;
-  ind_to_row = talloc(int, k+m);
+  ind_to_row = (int *)malloc(sizeof(int) * (k + m));
   if (!ind_to_row) {
     free(row_ids);
     return NULL;
@@ -872,7 +884,7 @@ static int **jerasure_generate_decoding_schedule(int k, int m, int w, int *bitma
      will do a good job.    This matrix has w*e rows, where e is the
      number of erasures (ddf+cdf) */
 
-  real_decoding_matrix = talloc(int, k*w*(cdf+ddf)*w);
+  real_decoding_matrix = (int *)malloc(sizeof(int) * (k * w * (cdf + ddf) * w));
   if (!real_decoding_matrix) {
     free(row_ids);
     free(ind_to_row);
@@ -884,8 +896,8 @@ static int **jerasure_generate_decoding_schedule(int k, int m, int w, int *bitma
      matrix inversion */
 
   if (ddf > 0) {
-    
-    decoding_matrix = talloc(int, k*k*w*w);
+
+    decoding_matrix = (int *)malloc(sizeof(int) * k * k * w * w);
     if (!decoding_matrix) {
       free(row_ids);
       free(ind_to_row);
@@ -903,7 +915,7 @@ static int **jerasure_generate_decoding_schedule(int k, int m, int w, int *bitma
       }
       ptr += (k*w*w);
     }
-    inverse = talloc(int, k*k*w*w);
+    inverse = (int *)malloc(sizeof(int) * k * k * w * w);
     if (!inverse) {
       free(row_ids);
       free(ind_to_row);
@@ -1066,7 +1078,7 @@ int ***jerasure_generate_schedule_cache(int k, int m, int w, int *bitmatrix, int
 
   if (m != 2) return NULL;
 
-  scache = talloc(int **, (k+m)*(k+m+1));
+  scache = (int ***)malloc(sizeof(int **) * ((k + m) * (k + m + 1)));
   if (scache == NULL) return NULL;
   
   for (e1 = 0; e1 < k+m; e1++) {
@@ -1234,7 +1246,7 @@ void jerasure_schedule_encode(int k, int m, int w, int **schedule,
   char **ptr_copy;
   int i, tdone;
 
-  ptr_copy = talloc(char *, (k+m));
+  ptr_copy = (char **)malloc(sizeof(char *) * (k + m));
   for (i = 0; i < k; i++) ptr_copy[i] = data_ptrs[i];
   for (i = 0; i < m; i++) ptr_copy[i+k] = coding_ptrs[i];
   for (tdone = 0; tdone < size; tdone += packetsize*w) {
@@ -1250,7 +1262,7 @@ int **jerasure_dumb_bitmatrix_to_schedule(int k, int m, int w, int *bitmatrix)
   int op;
   int index, optodo, i, j;
 
-  operations = talloc(int *, k*m*w*w+1);
+  operations = (int **)malloc(sizeof(int *) * (k * m * w * w + 1));
   if (!operations) return NULL;
   op = 0;
   
@@ -1259,9 +1271,10 @@ int **jerasure_dumb_bitmatrix_to_schedule(int k, int m, int w, int *bitmatrix)
     optodo = 0;
     for (j = 0; j < k*w; j++) {
       if (bitmatrix[index]) {
-        operations[op] = talloc(int, 5);
-	if (!operations[op]) {
-	  // -ENOMEM
+        operations[op] = (int *)malloc(sizeof(int) * 5);
+        if (!operations[op])
+        {
+          // -ENOMEM
           goto error;
         }
         operations[op][4] = optodo;
@@ -1276,7 +1289,7 @@ int **jerasure_dumb_bitmatrix_to_schedule(int k, int m, int w, int *bitmatrix)
       index++;
     }
   }
-  operations[op] = talloc(int, 5);
+  operations[op] = (int *)malloc(sizeof(int) * 5);
   if (!operations[op]) {
     // -ENOMEM
     goto error;
@@ -1305,29 +1318,29 @@ int **jerasure_smart_bitmatrix_to_schedule(int k, int m, int w, int *bitmatrix)
 /*   printf("Scheduling:\n\n");
   jerasure_print_bitmatrix(bitmatrix, m*w, k*w, w); */
 
-  operations = talloc(int *, k*m*w*w+1);
+  operations = (int **)malloc(sizeof(int *) * (k * m * w * w + 1));
   if (!operations) return NULL;
   op = 0;
-  
-  diff = talloc(int, m*w);
+
+  diff = (int *)malloc(sizeof(int) * m * w);
   if (!diff) {
     free(operations);
     return NULL;
   }
-  from = talloc(int, m*w);
+  from = (int *)malloc(sizeof(int) * m * w);
   if (!from) {
     free(operations);
     free(diff);
     return NULL;
   }
-  flink = talloc(int, m*w);
+  flink = (int *)malloc(sizeof(int) * m * w);
   if (!flink) {
     free(operations);
     free(diff);
     free(from);
     return NULL;
   }
-  blink = talloc(int, m*w);
+  blink = (int *)malloc(sizeof(int) * m * w);
   if (!blink) {
     free(operations);
     free(diff);
@@ -1377,7 +1390,7 @@ int **jerasure_smart_bitmatrix_to_schedule(int k, int m, int w, int *bitmatrix)
       optodo = 0;
       for (j = 0; j < k*w; j++) {
         if (ptr[j]) {
-          operations[op] = talloc(int, 5);
+          operations[op] = (int *)malloc(sizeof(int) * 5);
           if (!operations[op]) goto error;
           operations[op][4] = optodo;
           operations[op][0] = j/w;
@@ -1389,7 +1402,7 @@ int **jerasure_smart_bitmatrix_to_schedule(int k, int m, int w, int *bitmatrix)
         }
       }
     } else {
-      operations[op] = talloc(int, 5);
+      operations[op] = (int *)malloc(sizeof(int) * 5);
       if (!operations[op]) goto error;
       operations[op][4] = 0;
       operations[op][0] = k+from[row]/w;
@@ -1400,7 +1413,7 @@ int **jerasure_smart_bitmatrix_to_schedule(int k, int m, int w, int *bitmatrix)
       b1 = bitmatrix + from[row]*k*w;
       for (j = 0; j < k*w; j++) {
         if (ptr[j] ^ b1[j]) {
-          operations[op] = talloc(int, 5);
+          operations[op] = (int *)malloc(sizeof(int) * 5);
           if (!operations[op]) goto error;
           operations[op][4] = 1;
           operations[op][0] = j/w;
@@ -1427,8 +1440,8 @@ int **jerasure_smart_bitmatrix_to_schedule(int k, int m, int w, int *bitmatrix)
       }
     }
   }
-  
-  operations[op] = talloc(int, 5);
+
+  operations[op] = (int *)malloc(sizeof(int) * 5);
   if (!operations[op]) goto error;
   operations[op][0] = -1;
   free(from);

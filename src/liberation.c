@@ -52,14 +52,14 @@
 #include "jerasure.h"
 #include "liberation.h"
 
-#define talloc(type, num) (type *) malloc(sizeof(type)*(num))
+//#define talloc(type, num) (type *) malloc(sizeof(type)*(num))
 
 int *liberation_coding_bitmatrix(int k, int w)
 {
   int *matrix, i, j, index;
 
   if (k > w) return NULL;
-  matrix = talloc(int, 2*k*w*w);
+  matrix = (int *)malloc(sizeof(int) * 2 * k * w * w);
   if (matrix == NULL) return NULL;
   memset(matrix, 0, sizeof(int)*2*k*w*w);
   
@@ -97,7 +97,7 @@ int *liber8tion_coding_bitmatrix(int k)
 
   w = 8;
   if (k > w) return NULL;
-  matrix = talloc(int, 2*k*w*w);
+  matrix = (int *)malloc(sizeof(int) * 2 * k * w * w);
   if (matrix == NULL) return NULL;
   memset(matrix, 0, sizeof(int)*2*k*w*w);
   
@@ -211,7 +211,7 @@ int *blaum_roth_coding_bitmatrix(int k, int w)
 
   if (k > w) return NULL ;
 
-  matrix = talloc(int, 2*k*w*w);
+  matrix = (int *)malloc(sizeof(int) * 2 * k * w * w);
   if (matrix == NULL) return NULL;
   memset(matrix, 0, sizeof(int)*2*k*w*w);
   

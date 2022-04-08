@@ -54,7 +54,7 @@
 #include "jerasure.h"
 #include "reed_sol.h"
 
-#define talloc(type, num) (type *) malloc(sizeof(type)*(num))
+//#define talloc(type, num) (type *) malloc(sizeof(type)*(num))
 
 int *reed_sol_r6_coding_matrix(int k, int w)
 {
@@ -63,7 +63,7 @@ int *reed_sol_r6_coding_matrix(int k, int w)
 
   if (w != 8 && w != 16 && w != 32) return NULL;
 
-  matrix = talloc(int, 2*k);
+  matrix = (int *)malloc(sizeof(int) * 2 * k);
   if (matrix == NULL) return NULL;
 
   for (i = 0; i < k; i++) matrix[i] = 1;
@@ -83,7 +83,7 @@ int *reed_sol_vandermonde_coding_matrix(int k, int m, int w)
 
   vdm = reed_sol_big_vandermonde_distribution_matrix(k+m, k, w);
   if (vdm == NULL) return NULL;
-  dist = talloc(int, m*k);
+  dist = (int *)malloc(sizeof(int) * m * k);
   if (dist == NULL) {
     free(vdm);
     return NULL;
@@ -181,7 +181,7 @@ int *reed_sol_extended_vandermonde_matrix(int rows, int cols, int w)
   if (w < 30 && (1 << w) < rows) return NULL;
   if (w < 30 && (1 << w) < cols) return NULL;
 
-  vdm = talloc(int, rows*cols);
+  vdm = (int *)malloc(sizeof(int) * rows * cols);
   if (vdm == NULL) { return NULL; }
   
   vdm[0] = 1;

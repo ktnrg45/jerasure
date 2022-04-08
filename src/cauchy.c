@@ -83,8 +83,7 @@ static int cbest_init = 0;
 
 static int *cbest_all[33];
 
-
-#define talloc(type, num) (type *) malloc(sizeof(type)*(num))
+//#define talloc(type, num) (type *) malloc(sizeof(type)*(num))
 
 int cauchy_n_ones(int n, int w)
 {
@@ -134,7 +133,7 @@ int *cauchy_original_coding_matrix(int k, int m, int w)
   int i, j, index;
 
   if (w < 31 && (k+m) > (1 << w)) return NULL;
-  matrix = talloc(int, k*m);
+  matrix = (int *)malloc(sizeof(int) * k * m);
   if (matrix == NULL) return NULL;
   index = 0;
   for (i = 0; i < m; i++) {
@@ -151,7 +150,7 @@ int *cauchy_xy_coding_matrix(int k, int m, int w, int *X, int *Y)
   int index, i, j;
   int *matrix;
 
-  matrix = talloc(int, k*m);
+  matrix = (int *)malloc(sizeof(int) * k * m);
   if (matrix == NULL) { return NULL; }
   index = 0;
   for (i = 0; i < m; i++) {
@@ -211,7 +210,7 @@ int *cauchy_good_general_coding_matrix(int k, int m, int w)
   int *matrix, i;
 
   if (m == 2 && k <= cbest_max_k[w]) {
-    matrix = talloc(int, k*m);
+    matrix = (int *)malloc(sizeof(int) * k * m);
     if (matrix == NULL) return NULL;
     if (!cbest_init) {
       cbest_init = 1;
