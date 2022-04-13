@@ -25,11 +25,10 @@ set (HEADERS
   include/reed_sol.h
   )
 
-include_directories(include ${GF_COMPLETE_HEADER_DIR})
 add_library(Jerasure ${SRCS} ${HEADERS})
 
-find_library(GF_COMPLETE_LIB gf_complete)
-IF(NOT GF_COMPLETE_LIB)
-  message(FATAL_ERROR, "gf_complete not found")
-ENDIF()
-target_link_libraries(Jerasure GF_COMPLETE_LIB)
+set (GF_COMPLETE_DIR "gf-complete")
+
+add_subdirectory(${GF_COMPLETE_DIR})
+target_include_directories(Jerasure PUBLIC include ${GF_COMPLETE_DIR}/include)
+target_link_libraries(Jerasure PUBLIC gf_complete)
